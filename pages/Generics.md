@@ -3,18 +3,18 @@
 A major part of software engineering is building components that not only have well-defined and consistent APIs, but are also reusable.
 Components that are capable of working on the data of today as well as the data of tomorrow will give you the most flexible capabilities for building up large software systems.
 
-In languages like C# and Java, one of the main tools in the toolbox for creating reusable components is 'generics', that is, being able to create a component that can work over a variety of types rather than a single one.
+In languages like C# and Java, one of the main tools in the toolbox for creating reusable components is *generics*, that is, being able to create a component that can work over a variety of types rather than a single one.
 This allows users to consume these components and use their own types.
 
 # Hello World of Generics
 
 To start off, let's do the "hello world" of generics: the identity function.
 The identity function is a function that will return back whatever is passed in.
-You can think of this in a similar way to the 'echo' command.
+You can think of this in a similar way to the `echo` command.
 
 Without generics, we would either have to give the identity function a specific type:
 
-```TypeScript
+```ts
 function identity(arg: number): number {
     return arg;
 }
@@ -22,19 +22,19 @@ function identity(arg: number): number {
 
 Or, we could describe the identity function using the `any` type:
 
-```TypeScript
+```ts
 function identity(arg: any): any {
     return arg;
 }
 ```
 
-While using `any` is certainly generic in that will accept any and all types for the type of `arg`, we actually are losing the information about what that type was when the function returns.
+While using `any` is certainly generic in that it will cause the function to accept any and all types for the type of `arg`, we actually are losing the information about what that type was when the function returns.
 If we passed in a number, the only information we have is that any type could be returned.
 
 Instead, we need a way of capturing the type of the argument in such a way that we can also use it to denote what is being returned.
 Here, we will use a *type variable*, a special kind of variable that works on types rather than values.
 
-```TypeScript
+```ts
 function identity<T>(arg: T): T {
     return arg;
 }
@@ -51,19 +51,19 @@ Unlike using `any`, it's also just as precise (ie, it doesn't lose any informati
 Once we've written the generic identity function, we can call it in one of two ways.
 The first way is to pass all of the arguments, including the type argument, to the function:
 
-```TypeScript
-var output = identity<string>("myString");  // type of output will be 'string'
+```ts
+let output = identity<string>("myString");  // type of output will be 'string'
 ```
 
-Here we explicitly set `T` to be string as one of the arguments to the function call, denoted using the `<>` around the arguments rather than `()`.
+Here we explicitly set `T` to be `string` as one of the arguments to the function call, denoted using the `<>` around the arguments rather than `()`.
 
-The second way is also perhaps the most common. Here we use *type argument inference*, that is, we want the compiler to set the value of `T` for us automatically based on the type of the argument we pass in:
+The second way is also perhaps the most common. Here we use *type argument inference* -- that is, we want the compiler to set the value of `T` for us automatically based on the type of the argument we pass in:
 
-```TypeScript
-var output = identity("myString");  // type of output will be 'string'
+```ts
+let output = identity("myString");  // type of output will be 'string'
 ```
 
-Notice that we didn't have explicitly pass the type in the angle brackets (`<>`), the compiler just looked at the value `"myString"`, and set `T` to its type.
+Notice that we didn't have to explicitly pass the type in the angle brackets (`<>`); the compiler just looked at the value `"myString"`, and set `T` to its type.
 While type argument inference can be a helpful tool to keep code shorter and more readable, you may need to explicitly pass in the type arguments as we did in the previous example when the compiler fails to infer the type, as may happen in more complex examples.
 
 # Working with Generic Type Variables
@@ -73,16 +73,16 @@ That is, that you actually treat these parameters as if they could be any and al
 
 Let's take our `identity` function from earlier:
 
-```TypeScript
+```ts
 function identity<T>(arg: T): T {
     return arg;
 }
 ```
 
-What if want to also log the length of the argument `arg` to the console with each call.
+What if we want to also log the length of the argument `arg` to the console with each call?
 We might be tempted to write this:
 
-```TypeScript
+```ts
 function loggingIdentity<T>(arg: T): T {
     console.log(arg.length);  // Error: T doesn't have .length
     return arg;
@@ -92,10 +92,10 @@ function loggingIdentity<T>(arg: T): T {
 When we do, the compiler will give us an error that we're using the `.length` member of `arg`, but nowhere have we said that `arg` has this member.
 Remember, we said earlier that these type variables stand in for any and all types, so someone using this function could have passed in a `number` instead, which does not have a `.length` member.
 
-Let's say that we've actually intended this function to work on arrays of `T` rather that `T` directly. Since we're working with arrays, the `.length` member should be available.
+Let's say that we've actually intended this function to work on arrays of `T` rather than `T` directly. Since we're working with arrays, the `.length` member should be available.
 We can describe this just like we would create arrays of other types:
 
-```TypeScript
+```ts
 function loggingIdentity<T>(arg: T[]): T[] {
     console.log(arg.length);  // Array has a .length, so no more error
     return arg;
@@ -108,7 +108,7 @@ This allows us to use our generic type variable `T` as part of the types we're w
 
 We can alternatively write the sample example this way:
 
-```TypeScript
+```ts
 function loggingIdentity<T>(arg: Array<T>): Array<T> {
     console.log(arg.length);  // Array has a .length, so no more error
     return arg;
@@ -125,38 +125,38 @@ In this section, we'll explore the type of the functions themselves and how to c
 
 The type of generic functions is just like those of non-generic functions, with the type parameters listed first, similarly to function declarations:
 
-```TypeScript
+```ts
 function identity<T>(arg: T): T {
     return arg;
 }
 
-var myIdentity: <T>(arg: T) => T = identity;
+let myIdentity: <T>(arg: T) => T = identity;
 ```
 
 We could also have used a different name for the generic type parameter in the type, so long as the number of type variables and how the type variables are used line up.
 
-```TypeScript
+```ts
 function identity<T>(arg: T): T {
     return arg;
 }
 
-var myIdentity: <U>(arg: U) => U = identity;
+let myIdentity: <U>(arg: U) => U = identity;
 ```
 
 We can also write the generic type as a call signature of an object literal type:
 
-```TypeScript
+```ts
 function identity<T>(arg: T): T {
     return arg;
 }
 
-var myIdentity: {<T>(arg: T): T} = identity;
+let myIdentity: {<T>(arg: T): T} = identity;
 ```
 
 Which leads us to writing our first generic interface.
 Let's take the object literal from the previous example and move it to an interface:
 
-```TypeScript
+```ts
 interface GenericIdentityFn {
     <T>(arg: T): T;
 }
@@ -165,14 +165,14 @@ function identity<T>(arg: T): T {
     return arg;
 }
 
-var myIdentity: GenericIdentityFn = identity;
+let myIdentity: GenericIdentityFn = identity;
 ```
 
 In a similar example, we may want to move the generic parameter to be a parameter of the whole interface.
 This lets us see what type(s) we're generic over (e.g. `Dictionary<string>` rather than just `Dictionary`).
 This makes the type parameter visible to all the other members of the interface.
 
-```TypeScript
+```ts
 interface GenericIdentityFn<T> {
     (arg: T): T;
 }
@@ -181,7 +181,7 @@ function identity<T>(arg: T): T {
     return arg;
 }
 
-var myIdentity: GenericIdentityFn<number> = identity;
+let myIdentity: GenericIdentityFn<number> = identity;
 ```
 
 Notice that our example has changed to be something slightly different.
@@ -197,39 +197,39 @@ Note that it is not possible to create generic enums and namespaces.
 A generic class has a similar shape to a generic interface.
 Generic classes have a generic type parameter list in angle brackets (`<>`) following the name of the class.
 
-```TypeScript
+```ts
 class GenericNumber<T> {
     zeroValue: T;
     add: (x: T, y: T) => T;
 }
 
-var myGenericNumber = new GenericNumber<number>();
+let myGenericNumber = new GenericNumber<number>();
 myGenericNumber.zeroValue = 0;
 myGenericNumber.add = function(x, y) { return x + y; };
 ```
 
-This is a pretty literal use of the `GenericNumber` class, but you may have noticed that nothing is restricting is to only use the `number` type.
+This is a pretty literal use of the `GenericNumber` class, but you may have noticed that nothing is restricting it to only use the `number` type.
 We could have instead used `string` or even more complex objects.
 
-```TypeScript
-var stringNumeric = new GenericNumber<string>();
+```ts
+let stringNumeric = new GenericNumber<string>();
 stringNumeric.zeroValue = "";
 stringNumeric.add = function(x, y) { return x + y; };
 
-alert(stringNumeric.add(stringNumeric.zeroValue, "test"));
+console.log(stringNumeric.add(stringNumeric.zeroValue, "test"));
 ```
 
 Just as with interface, putting the type parameter on the class itself lets us make sure all of the properties of the class are working with the same type.
 
-As we covered in [Classes|Classes in TypeScript], a class has two side to its type: the static side and the instance side.
+As we covered in [our section on classes](./Classes.md), a class has two sides to its type: the static side and the instance side.
 Generic classes are only generic over their instance side rather than their static side, so when working with classes, static members can not use the class's type parameter.
 
 # Generic Constraints
 
 If you remember from an earlier example, you may sometimes want to write a generic function that works on a set of types where you have some knowledge about what capabilities that set of types will have.
-In our `loggingIdentity` example, we wanted to be able access the `.length` property of `arg`, but the compiler could not prove that every type had a `.length` property, so it warns us that we can't make this assumption.
+In our `loggingIdentity` example, we wanted to be able to access the `.length` property of `arg`, but the compiler could not prove that every type had a `.length` property, so it warns us that we can't make this assumption.
 
-```TypeScript
+```ts
 function loggingIdentity<T>(arg: T): T {
     console.log(arg.length);  // Error: T doesn't have .length
     return arg;
@@ -243,7 +243,7 @@ To do so, we must list our requirement as a constraint on what T can be.
 To do so, we'll create an interface that describes our constraint.
 Here, we'll create an interface that has a single `.length` property and then we'll use this interface and the `extends` keyword to denote our constraint:
 
-```TypeScript
+```ts
 interface Lengthwise {
     length: number;
 }
@@ -256,43 +256,38 @@ function loggingIdentity<T extends Lengthwise>(arg: T): T {
 
 Because the generic function is now constrained, it will no longer work over any and all types:
 
-```TypeScript
+```ts
 loggingIdentity(3);  // Error, number doesn't have a .length property
 ```
 
 Instead, we need to pass in values whose type has all the required properties:
 
-```TypeScript
+```ts
 loggingIdentity({length: 10, value: 3});
 ```
 
 ## Using Type Parameters in Generic Constraints
 
-In some cases, it may be useful to declare a type parameter that is constrained by another type parameter. For example,
+You can declare a type parameter that is constrained by another type parameter.
+For example, here we'd like to get a property from an object given its name.
+We'd like to ensure that we're not accidentally grabbing a property that does not exist on the `obj`, so we'll place a constraint between the two types:
 
-```TypeScript
-function find<T, U extends Findable<T>>(n: T, s: U) {   // errors because type parameter used in constraint
-  // ...
+```ts
+function getProperty<T, K extends keyof T>(obj: T, key: K) {
+    return obj[key];
 }
-find (giraffe, myAnimals);
+
+let x = { a: 1, b: 2, c: 3, d: 4 };
+
+getProperty(x, "a"); // okay
+getProperty(x, "m"); // error: Argument of type 'm' isn't assignable to 'a' | 'b' | 'c' | 'd'.
 ```
-
-You can achieve the pattern above by replacing the type parameter with its constraint. Rewriting the example above,
-
-```TypeScript
-function find<T>(n: T, s: Findable<T>) {
-  // ...
-}
-find(giraffe, myAnimals);
-```
-
-*Note:* The above is not strictly identical, as the return type of the first function could have returned `U`, which the second function pattern does not provide a means to do.
 
 ## Using Class Types in Generics
 
 When creating factories in TypeScript using generics, it is necessary to refer to class types by their constructor functions. For example,
 
-```TypeScript
+```ts
 function create<T>(c: {new(): T; }): T {
     return new c();
 }
@@ -300,7 +295,7 @@ function create<T>(c: {new(): T; }): T {
 
 A more advanced example uses the prototype property to infer and constrain relationships between the constructor function and the instance side of class types.
 
-```TypeScript
+```ts
 class BeeKeeper {
     hasMask: boolean;
 }
@@ -321,11 +316,10 @@ class Lion extends Animal {
     keeper: ZooKeeper;
 }
 
-function findKeeper<A extends Animal, K> (a: {new(): A;
-    prototype: {keeper: K}}): K {
-
-    return a.prototype.keeper;
+function createInstance<A extends Animal>(c: new () => A): A {
+    return new c();
 }
 
-findKeeper(Lion).nametag;  // typechecks!
+createInstance(Lion).keeper.nametag;  // typechecks!
+createInstance(Bee).keeper.hasMask;   // typechecks!
 ```
